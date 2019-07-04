@@ -9,13 +9,19 @@ open System.IO
 #r "FParsec"
 #r "FParsecCS"
 
+// SLFormat  (not on nuget.org)
+#I @"C:\Users\stephen\.nuget\packages\slformat\1.0.2-alpha-20190616\lib\netstandard2.0"
+#r @"SLFormat.dll"
+
 #load "..\src\SLFilestore\Base.fs"
 #load "..\src\SLFilestore\DirectoryListing.fs"
+open SLFilestore.Base
 open SLFilestore.DirectoryListing
 
 let localFile (relativePath : string) : string = 
     Path.Combine(__SOURCE_DIRECTORY__, "..", relativePath)
 
 let demo01 () = 
-    localFile @"data\factx.txt"
-        |> readDirRecurseOutput
+    match localFile @"data\factx.txt" |> readDirRecurseOutput with
+    | Error msg -> printfn "%s" msg
+    | Ok store -> drawFilestore store |> printfn "%s"

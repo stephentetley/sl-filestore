@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="FParsec" Version="1.0.4-rc3" />
+    <PackageReference Include="SLFormat" Version="1.0.2-alpha-20190616" />
   </ItemGroup>
 
 </Project>
