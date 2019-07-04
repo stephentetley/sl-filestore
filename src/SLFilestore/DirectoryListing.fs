@@ -149,7 +149,7 @@ module DirectoryListing =
     let private pListing : Parser<Block list,unit> = 
         many (pBlock .>> spaces)
 
-    let readDirRecurseOutput (inputPath:string) : Result<Block list, string> = 
+    let parseDirRecurseOutput (inputPath:string) : Result<Block list, string> = 
         let source = File.ReadAllText(inputPath)
         match runParserOnString pListing () inputPath source with
         | Success(a,_,_) -> Result.Ok a
@@ -201,8 +201,15 @@ makeRecur store pathto  (WinFolder _ mtime name)   =
                  (rows : FileObjectRow list) : FsObject list = 
         let rec work (fullPath : string) (row : FileObjectRow) cont = 
             match row with
-            | FolderRow (name, props) -> failwith "todo"
-            | FileRow (name, props, size) -> failwith "todo"
+            | FolderRow (name, props) -> 
+                let fullPath1 = fullPath + "\\" + name
+                let kids = Map.tryFind fullPath1 store |> Option.defaultValue []
+                workList fullPath1 kids (fun acc ->
+                let dirObj = DirectoryObject(name, props, acc)
+                cont (FsDirectory dirObj))
+            | FileRow (name, props, size) -> 
+                let fileObj = FileObject(name, props, size)
+                cont (FsFile fileObj)
         and workList (fullPath : string) (rows : FileObjectRow list) cont = 
             match rows with
             | [] -> cont []
@@ -219,4 +226,13 @@ makeRecur store pathto  (WinFolder _ mtime name)   =
             let initialKids = makeInitialKids listing
             let kids = buildCPS initialKids root.SubPath root.Rows
             Filestore(root.SubPath, kids) |> Some
+
+
+    let readDirRecurseOutput (inputPath:string) : Result<Filestore, string> = 
+        match parseDirRecurseOutput inputPath with
+        | Result.Error msg -> Result.Error msg
+        | Result.Ok blocks ->
+            match buildTopDown blocks with
+            | None -> Result.Error "Parsing ok, building failed"
+            | Some store -> Result.Ok store
 
