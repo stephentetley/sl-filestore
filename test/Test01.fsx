@@ -13,5 +13,9 @@ open System.IO
 #load "..\src\SLFilestore\DirectoryListing.fs"
 open SLFilestore.DirectoryListing
 
+let localFile (relativePath : string) : string = 
+    Path.Combine(__SOURCE_DIRECTORY__, "..", relativePath)
 
-
+let demo01 () = 
+    localFile @"data\factx.txt"
+        |> readDirRecurseOutput

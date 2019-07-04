@@ -20,33 +20,21 @@ module DirectoryListing =
     type Size = int64
 
 
-    // Mode is not currently interpreted
-    type Properties = 
-        { Mode : string option
-          ModificationTime : DateTime option
-        }
  
     type FileObjectRow = 
-        | FolderRow of Name * Properties * FilePath
-        | FileRow of Name * Properties * Size * FilePath
+        | FolderRow of Name * FoProperties
+        | FileRow of Name * FoProperties * Size
         member x.Name 
             with get () : string = 
                 match x with
-                | FolderRow(name,_,_) -> name
-                | FileRow(name,_,_,_) -> name
+                | FolderRow(name, _) -> name
+                | FileRow(name, _, _) -> name
 
         member x.Properties 
-            with get () :Properties = 
+            with get () : FoProperties = 
                 match x with
-                | FolderRow(_,props,_) -> props
-                | FileRow(_,props,_,_) -> props
-
-        member x.Path
-            with get () : string = 
-                match x with
-                | FolderRow(_,_,path) -> path
-                | FileRow(_,_,_,path) -> path
-
+                | FolderRow(_, info) -> info
+                | FileRow(_, info, _) -> info
 
     type Block = 
         { SubPath: FilePath 
@@ -120,26 +108,26 @@ module DirectoryListing =
         columns .>> newline .>> underline
 
 
-    let private pFolder (pathTo:string) (mode:string) : Parser<FileObjectRow, unit> = 
+    let private pFolder (mode:string) : Parser<FileObjectRow, unit> = 
         parse { 
             let! timestamp = symbol pDateTime 
             let! name = pName 
-            return (FolderRow (name, { Mode = Some mode; ModificationTime = Some timestamp}, pathTo))
+            return (FolderRow (name, { Mode = mode; ModificationTime = timestamp}))
             }
 
-    let private pFile (pathTo:string) (mode:string) : Parser<FileObjectRow, unit> = 
+    let private pFile (mode:string) : Parser<FileObjectRow, unit> = 
         parse { 
             let! timestamp = symbol pDateTime
             let! size = symbol pint64
             let! name = pName 
-            return (FileRow (name, { Mode = Some mode; ModificationTime = Some timestamp}, size, pathTo))
+            return (FileRow (name, { Mode = mode; ModificationTime = timestamp}, size))
             }
 
     // Note - file store is flat at parse time (represented as a "Row")
     // It needs postprocessing to build.
-    let private pRow (pathTo : string) : Parser<FileObjectRow, unit> = 
+    let private pRow : Parser<FileObjectRow, unit> = 
         let parseK mode = 
-            if isDir mode then pFolder pathTo mode else pFile pathTo mode
+            if isDir mode then pFolder mode else pFile mode
         (symbol pMode) >>= parseK
 
 
@@ -148,23 +136,24 @@ module DirectoryListing =
 
     let private pBlock : Parser<Block, unit> = 
         parse { 
-            let! parent = (spaces >>. pDirectoryDirective) 
+            let! path = (spaces >>. pDirectoryDirective) 
             do! emptyLine
             do! emptyLine
             let! _ = pHeadings .>> newline
-            let! rows = many1 (pRow parent)
-            return { SubPath = parent; Rows = rows }
+            let! rows = many pRow
+            return { SubPath = path; Rows = rows }
             }
 
 
 
-    let private pListing : Parser<Block list,unit> = many (pBlock .>> spaces)
+    let private pListing : Parser<Block list,unit> = 
+        many (pBlock .>> spaces)
 
-    let readDirRecurseOutput (inputPath:string) : Choice<string,Block list> = 
+    let readDirRecurseOutput (inputPath:string) : Result<Block list, string> = 
         let source = File.ReadAllText(inputPath)
         match runParserOnString pListing () inputPath source with
-        | Success(a,_,_) -> Choice2Of2 a
-        | Failure(s,_,_) -> Choice1Of2 s
+        | Success(a,_,_) -> Result.Ok a
+        | Failure(s,_,_) -> Result.Error s
 
 
 
@@ -212,8 +201,8 @@ makeRecur store pathto  (WinFolder _ mtime name)   =
                  (rows : FileObjectRow list) : FsObject list = 
         let rec work (fullPath : string) (row : FileObjectRow) cont = 
             match row with
-            | FolderRow (name, props, path) -> failwith "todo"
-            | FileRow (name, props, size, path) -> failwith "todo"
+            | FolderRow (name, props) -> failwith "todo"
+            | FileRow (name, props, size) -> failwith "todo"
         and workList (fullPath : string) (rows : FileObjectRow list) cont = 
             match rows with
             | [] -> cont []

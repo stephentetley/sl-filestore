@@ -12,7 +12,7 @@ module Base =
     open System
 
     // Mode is not currently interpreted
-    type FileInfo = 
+    type FoProperties = 
         { Mode : string
           ModificationTime : DateTime
         }
@@ -21,10 +21,10 @@ module Base =
 
 
     type FileObject = 
-        | FileObject of name : string * info :  FileInfo * size : int64
+        | FileObject of name : string * info : FoProperties * size : int64
 
     and DirectoryObject = 
-        | DirectoryObject of name : string * info :  FileInfo * kids : FsObject list
+        | DirectoryObject of name : string * info : FoProperties * kids : FsObject list
 
     and FsObject = 
         | FsFile of FileObject
