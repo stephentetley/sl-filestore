@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SLFilestore", "src\SLFilestore.fsproj", "{E8C9B9B7-33C1-4304-806D-0B0F57E85BE4}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SLFilestoreTest", "test\SLFilestoreTest.fsproj", "{344D34AF-6642-4B96-BD5F-ECA3BF1B348E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E8C9B9B7-33C1-4304-806D-0B0F57E85BE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8C9B9B7-33C1-4304-806D-0B0F57E85BE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8C9B9B7-33C1-4304-806D-0B0F57E85BE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8C9B9B7-33C1-4304-806D-0B0F57E85BE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{344D34AF-6642-4B96-BD5F-ECA3BF1B348E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{344D34AF-6642-4B96-BD5F-ECA3BF1B348E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{344D34AF-6642-4B96-BD5F-ECA3BF1B348E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{344D34AF-6642-4B96-BD5F-ECA3BF1B348E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D9822086-4655-42B7-BA05-5918F5046C96}
+	EndGlobalSection
+EndGlobal
