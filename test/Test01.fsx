@@ -15,8 +15,8 @@ open System.IO
 
 #load "..\src\SLFilestore\Base.fs"
 #load "..\src\SLFilestore\DirectoryListing.fs"
-open SLFilestore.Base
-open SLFilestore.DirectoryListing
+#load "..\src\SLFilestore\Operations.fs"
+open SLFilestore
 
 let localFile (relativePath : string) : string = 
     Path.Combine(__SOURCE_DIRECTORY__, "..", relativePath)
